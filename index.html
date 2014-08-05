@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+  <title>Device Mockups Demo</title>
+  <script src="js/angular.min.js"></script>
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" href="device-mockups/device-mockups.css" />
+
+  <style>
+    #target-frame {
+      width: 100%;
+      height: 100%;
+    }
+    .width-imac-,
+    .width-macbook- {
+      max-width: 1000px;
+    }
+    .width-ipad-landscape,
+    .width-ipad-portrait {
+      max-width: 800px;
+    }
+    .width-iphone5-portrait,
+    .width-lumia920-portrait,
+    .width-nexus7-portrait,
+    .width-s3-portrait {
+      max-width: 400px;
+    }
+    .width-iphone5-landscape,
+    .width-lumia920-landscape,
+    .width-nexus7-landscape,
+    .width-s3-landscape,
+    .width-surface-landscape {
+      max-width: 600px;
+    }
+  </style>
+  <script>
+    var app = angular.module('app', []);
+
+    app.controller('DeviceCtrl', ['$scope', '$sce',
+      function($scope, $sce) {
+
+        $scope.devices = {
+          'imac': {
+            orientations: [],
+            colors: []
+          },
+          'ipad': {
+            orientations: ['landscape', 'portrait'],
+            colors: ['black', 'white']
+          },
+          'iphone5': {
+            orientations: ['landscape', 'portrait'],
+            colors: ['black', 'white']
+          },
+          'lumia920': {
+            orientations: ['landscape', 'portrait'],
+            colors: []
+          },
+          'macbook': {
+            orientations: [],
+            colors: []
+          },
+          'nexus7': {
+            orientations: ['landscape', 'portrait'],
+            colors: []
+          },
+          's3': {
+            orientations: ['landscape', 'portrait'],
+            colors: ['black', 'white']
+          },
+          'surface': {
+            orientations: [],
+            colors: []
+          }
+        };
+
+        $scope.orientations = [];
+        $scope.colors = [];
+
+        $scope.setDevice = function(name, info) {
+          $scope.device = name;
+
+          if (info.orientations[0] !== undefined) {
+            $scope.orientations = info.orientations;
+            $scope.setOrientation(info.orientations[0]);
+          } else {
+            $scope.orientations = [];
+            $scope.orientation = '';
+          }
+          if (info.colors[0] !== undefined) {
+            $scope.colors = info.colors;
+            $scope.setColor(info.colors[0]);
+          } else {
+            $scope.colors = [];
+            $scope.color = '';
+          }
+
+        };
+
+        $scope.setOrientation = function(orientation) {
+          $scope.orientation = orientation;
+        };
+
+        $scope.setColor = function(color) {
+          $scope.color = color;
+        };
+
+        $scope.activeOrientation = function(orientation) {
+          if($scope.orientation == orientation) {
+            return true;
+          } else {
+            return false;
+          }
+        };
+
+        $scope.setUrl = function(url) {
+          $scope.url = url;
+          $scope.target = $sce.trustAsResourceUrl($scope.url);
+        };
+
+        $scope.device = '';
+        $scope.orientation = '';
+        $scope.color = '';
+
+        $scope.setDevice('s3', $scope.devices.s3);
+        $scope.setUrl('http://getbootstrap.com/');
+
+        $scope.target = $sce.trustAsResourceUrl($scope.url);
+      }
+    ]);
+  </script>
+</head>
+
+<body ng-controller="DeviceCtrl">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-1">
+
+        <h4>Device</h4>
+        <ul class='nav nav-pills nav-stacked'>
+          <li ng-repeat="(name, item) in devices" ng-class="{'active': device == name}">
+            <a href="" ng-click="setDevice(name, item)">{{name}}</a>
+          </li>
+        </ul>
+
+        <div ng-if="colors">
+          <h4>Orientation</h4>
+          <ul class='nav nav-pills nav-stacked'>
+            <li ng-repeat="item in orientations" ng-class="{'active': orientation == item}">
+              <a href="" ng-click="setOrientation(item)">{{item}}</a>
+            </li>
+          </ul>
+        </div>
+
+        <div ng-if="colors">
+          <h4>Color</h4>
+          <ul class='nav nav-pills nav-stacked'>
+            <li ng-repeat="item in colors" ng-class="{'active': color == item}">
+              <a href="" ng-click="setColor(item)">{{item}}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-md-11">
+        <nav class="navbar navbar-default" role="navigation" style="margin-top: 20px;">
+          <div class="">
+            <form class="navbar-form navbar-left" role="search">
+              <div class="form-group">
+                <input id="url" type="url" class="form-control" ng-model="url">
+              </div>
+              <button class='' ng-click="setUrl(url);">go</button>
+            </form>
+
+            <div class="navbar-header">
+              <a class="navbar-brand" href="">{{device}} {{orientation}} {{color}}</a>
+            </div>
+          </div>
+        </nav>
+
+        <div class="device-wrapper width-{{device}}-{{orientation}}">
+          <div class="device-mockup {{device}} {{orientation}} {{color}}">
+            <div class="device">
+              <div class="screen">
+                <iframe src="{{target}}" id="target-frame" frameborder="0"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
